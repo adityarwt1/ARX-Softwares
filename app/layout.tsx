@@ -44,15 +44,25 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
+  const isLive =
+    process.env.NEXT_PUBLIC_IS_LIVE === "true" &&
+    process.env.NEXT_PUBLIC_IS_PRODUCTION === "true";
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Navbar_Main_Wrapper/>
-        {children}
-        </body>
+        {isLive ? (
+          <>
+            <Navbar_Main_Wrapper />
+            {children}
+          </>
+        ) : (
+          <div className="w-full h-screen text-center flex justify-center items-center "><div>Coming soon....</div></div>
+        )}
+      </body>
     </html>
   );
 }
