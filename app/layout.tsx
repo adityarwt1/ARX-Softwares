@@ -60,7 +60,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             {children}
           </>
         ) : (
-          <div className="w-full h-screen text-center flex justify-center items-center text-white"><div>Coming soon....</div></div>
+          <div className="w-full h-screen text-center flex justify-center items-center text-white"><div>Comming soon....</div></div>
         )}
       </body>
     </html>
