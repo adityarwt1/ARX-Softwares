@@ -5,9 +5,9 @@ const Logo: React.FC = () => {
     return (
         <Link
             href="/"
-            className="text-zinc-950 w-full text-4xl font-sans font-extrabold"
+            className="text-zinc-950 w-full text-4xl font-sans font-extrabold flex items-center justify-start"
         >
-            ARX
+            <span>ARX</span>
         </Link>
     )
 }

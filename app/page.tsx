@@ -1,9 +1,11 @@
 "use client"
-import HeroSection from "@/components/LandingPage/HeroSection"
+import HeroSection from "@/components/LandingPage/Hero/HeroSection"
 import React, { useState } from "react"
-const HomePage = ()=>{
+const HomePage = () => {
   return (
-    <div>Landing Page</div>
+    <div className="flex flex-coll justify-center items-center">
+      <HeroSection />
+    </div>
   )
 }
 

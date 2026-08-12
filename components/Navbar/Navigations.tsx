@@ -10,7 +10,7 @@ const Navigations: React.FC = () => {
   const isRoot = pathname === "/";
 
   return (
-    <ol className="flex text-zinc-950 font-extralight gap-15 justify-center items-center w-full">
+    <ol className="hidden md:flex text-zinc-950 font-extralight gap-15 justify-center items-center w-full ">
       {navigations.map((navs, index) => (
         <motion.li
           key={navs.href}

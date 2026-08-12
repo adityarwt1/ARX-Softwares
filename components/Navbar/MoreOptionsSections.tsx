@@ -1,7 +1,7 @@
 'use client'
 import React from "react";
 import { motion } from 'motion/react'
-import { moreOptions } from "@/constants/navbar/navigations";
+import { moreOptions, navigations } from "@/constants/navbar/navigations";
 import Link from "next/link";
 const MoreOptionsSections: React.FC = () => {
     return (
@@ -12,7 +12,15 @@ const MoreOptionsSections: React.FC = () => {
             exit={{height:0}}
             transition={{duration:0.5}}
         >
-            <ol className="flex flex-row justify-start items-center text-zinc-950 gap-10 w-full px-5">
+            <ol className="flex flex-row justify-start items-center text-zinc-950 gap-10 w-full px-5 overflow-y-scroll scrollbar-none">
+            <div className="md:hidden flex flex-row justify-start items-center text-zinc-950 gap-10">
+                
+            {navigations.map((moreOptions, index)=>(
+                <li key={index + moreOptions.title} >
+                    <Link href={moreOptions.href} title={moreOptions.title}>{moreOptions.title}</Link>
+                </li>
+            ))}
+            </div>
 
             {moreOptions.map((moreOptions, index)=>(
                 <li key={index + moreOptions.title} >
