@@ -34,6 +34,7 @@ const HeroRightSection: React.FC = () => {
                 <ButtonNormal title={`Product: 2`} />
                 <ButtonNormal title={`Upcomming: 5`} />
             </div>
+            
         </div>
     )
 }
