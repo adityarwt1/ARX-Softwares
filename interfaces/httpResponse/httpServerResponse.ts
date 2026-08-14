@@ -1,4 +1,4 @@
-export interface HTTP_Response<T> {
+export interface HTTP_Response<T = unknown> {
     success:boolean,
     success_message?:string
     data?:T,

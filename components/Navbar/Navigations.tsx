@@ -14,12 +14,6 @@ const Navigations: React.FC = () => {
       {navigations.map((navs, index) => (
         <motion.li
           key={navs.href}
-          initial={isRoot ? { x: 200, opacity: 0 } : undefined}
-          animate={isRoot ? { x: 0, opacity: 1 } : undefined}
-          transition={{
-            duration: isRoot ? 0.5 : 0,
-            delay: isRoot ? 0.1 * index : 0,
-          }}
         >
           <Link title={navs.title} href={navs.href}>
             {navs.title}

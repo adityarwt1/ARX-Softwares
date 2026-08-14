@@ -10,7 +10,7 @@ const Navbar_Main_Wrapper: React.FC = () => {
     const handleShowMore = () => setShowMore(!showMore)
     return (
         <>
-            <nav className="flex flex-col justify-between items-center bg-[#D9D9D9] w-full h-16 px-4 py-2">
+            <nav className="flex flex-col justify-between items-center bg-[#D9D9D9] w-full h-12 px-4 py-2">
                 <div className="flex justify-between items-center w-full h-auto">
                     {/* Logo sections */}
                     <Logo />
