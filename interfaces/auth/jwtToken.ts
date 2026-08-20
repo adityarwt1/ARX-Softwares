@@ -3,3 +3,9 @@ export interface JWT_TOKEN_INTERFACE {
     exp?:number,
     iat?:number
 }
+
+export interface AdminAndDeveloper {
+    isAdmin:boolean,
+    userId:string,
+    email:string, 
+}

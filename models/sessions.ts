@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose" 
 
 
-interface SessionInterfaces {
+export interface SessionInterfaces {
     userId:mongoose.Types.ObjectId,
     refreshToken:string,
 

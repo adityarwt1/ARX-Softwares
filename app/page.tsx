@@ -1,12 +1,15 @@
 "use client"
-import HeroSection from "@/components/LandingPage/Hero/HeroSection"
-import React, { useState } from "react"
-const HomePage = () => {
+import React from "react"
+import LandingPage from "@/components/LandingPage/LandingPageOrHomePageMainWrapper"
+const Landing_Page = () => {
   return (
-    <div className="flex flex-coll justify-center items-center">
-      <HeroSection />
-    </div>
+    <LandingPage>
+      <LandingPage.HeroSection>
+        <LandingPage.HeroSection.HeroleftSection/>
+        <LandingPage.HeroSection.HeroRightSection/>
+      </LandingPage.HeroSection>
+    </LandingPage>
   )
 }
 
-export default HomePage
+  export default Landing_Page
