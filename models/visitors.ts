@@ -1,31 +1,27 @@
 import mongoose from "mongoose";
-
-export interface Visitors {
-    visits: number;
-    ipAddress: string[];
+export enum MonthsThreeWordForm {
+    "JAN" = "JANUARY",
+    "FEB" = "FEBRUARY",
+    "MAR" = "MARCH",
+    "APR" = "APRIL",
+    "MAY" = "MAY", 
+    "JUN" = "JUNE", 
+    "JUL" = "JULY",
+    "AUG" = "AUGUST", 
+    "SEP" = "SEPTEMBER", 
+    "OCT" = "OCTOBER",
+    "NOV" = "NOVEMBER", 
+    "DEC" = "DECEMBER"
 }
-
-const VisitorsSchema: mongoose.Schema<Visitors> = new mongoose.Schema(
-    {
-        visits: {
-            type: Number,
-            default: 0,
-            required: false,
-        },
-        ipAddress: [
-            {
-                type: String,
-                required: false,
-            },
-        ],
-    },
-    {
-        timestamps: true,
-    }
-);
-
-const Visitors =
-    mongoose.models.Visitors ||
-    mongoose.model<Visitors>("Visitors", VisitorsSchema);
-
-export default Visitors;
+export interface Days{
+    date:number,
+    visitios:number
+}
+export interface Month {
+    month:MonthsThreeWordForm,
+    days:Days[]
+}
+export interface YearBasedVisitors {
+    year:number,
+    months:Month[]
+}

@@ -1,27 +1,37 @@
 import mongoose, { Schema } from "mongoose";
-
-export interface UserSchemaInterface {
-    firstName:string,
-    lastName:string,
-    email:string,
-    password:string,
-    profilePicture?:string,
-    isAdmin?:boolean,
-    isDeveloper?:boolean,
+export interface UserInterface {
+    fullName: string,
+    email: string
+    password: string,
+    profilePicture?: string
+    isDeveloper: boolean
+    isAdmin: boolean
+    isConsumer: boolean
+    createdAt?: Date,
+    updatedAt?: Date
 }
 
-const UserSchema:Schema<UserSchemaInterface> = new Schema({
-    firstName:{
+const UserSchema:Schema<UserInterface> = new Schema({
+    fullName:{
         type:String,
         required:true
-    },
-    lastName:{
-        type:String,
-        required:false
     },
     email:{
         type:String,
-        required:true
+        required:true,
+        index:true
+    },
+    isAdmin:{
+        type:Boolean,
+        required:false,
+    },
+    isConsumer:{
+        type:Boolean,
+        required:false,
+    },
+    isDeveloper:{
+        type:Boolean,
+        required:false,
     },
     password:{
         type:String,
@@ -30,19 +40,11 @@ const UserSchema:Schema<UserSchemaInterface> = new Schema({
     profilePicture:{
         type:String,
         required:false,
-        default:"/defaultUserProfile.png"
-    },
-    isAdmin:{
-        type:Boolean,
-        required:false,
-    },
-    isDeveloper:{
-        type:Boolean,
-        required:false,
+        default:'/defaultProfilePicture.png'
     }
 },{
     timestamps:true
 })
 
-const User = mongoose.models.User || mongoose.model<UserSchemaInterface>("User", UserSchema)
+const User = mongoose.models.User || mongoose.model<UserInterface>("User", UserSchema)
 export default User
