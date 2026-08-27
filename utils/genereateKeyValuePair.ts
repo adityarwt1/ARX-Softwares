@@ -1,22 +1,22 @@
-// import {
-//     generateKeyPair,
-//     exportPKCS8,
-//     exportSPKI,
-// } from "jose";
+import {
+    generateKeyPair,
+    exportPKCS8,
+    exportSPKI,
+} from "jose";
 
-// const { publicKey, privateKey } = await generateKeyPair("EdDSA", {
-//     extractable: true,
-//     modulusLength:4096
-// });
+const { publicKey, privateKey } = await generateKeyPair("EdDSA", {
+    extractable: true,
+    modulusLength:4096
+});
 
-// const privateKeyPem = await exportPKCS8(privateKey);
-// const publicKeyPem = await exportSPKI(publicKey);
+const privateKeyPem = await exportPKCS8(privateKey);
+const publicKeyPem = await exportSPKI(publicKey);
 
-// console.log("PRIVATE KEY:");
-// console.log(privateKeyPem.toString());
+console.log("PRIVATE KEY:");
+console.log(privateKeyPem.toString());
 
-// console.log("PUBLIC KEY:");
-// console.log(publicKeyPem);
+console.log("PUBLIC KEY:");
+console.log(publicKeyPem);
 
 
 
