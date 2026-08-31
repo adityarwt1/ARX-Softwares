@@ -27,7 +27,7 @@ const UserSchema:Schema<UserInterface> = new Schema({
     },
     isConsumer:{
         type:Boolean,
-        required:false,
+        required:true,
     },
     isDeveloper:{
         type:Boolean,

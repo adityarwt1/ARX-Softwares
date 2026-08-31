@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 interface SessionInterface {
     userId:mongoose.Types.ObjectId,
-    exp:Date | number,
+    exp:Date | number | String,
     isAdmin?:boolean,
     isDeveloper?:boolean,
     isConsumer?:boolean
@@ -14,7 +14,7 @@ const SessionSchema = new Schema<SessionInterface>({
         required:true
     },
     exp:{
-        type:Date || Number,
+        type:Date || Number || String,
         required:true
     },
     isAdmin:{

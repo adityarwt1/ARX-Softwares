@@ -1,3 +1,4 @@
+import { HTTP_STATUS_CODE } from "@/enums/httpRequest/statusCode";
 import dbConnect from "@/lib/mongodb";
 import Session from "@/models/session";
 import User from "@/models/user";
@@ -6,19 +7,28 @@ import { getPublicKey, getToken } from "@/utils/authenticationsJose";
 import { badRequest, conflict, internalServerIssue, resultantResponse } from "@/utils/httpResponses";
 import { CreateUserSchema } from "@/validations/userSignup/userValidations";
 import bcrypt from "bcryptjs";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * when i api response send refresh the page to use the default strategy
  */
-export async function POST(req:NextRequest):Promise<StandarApiResponseV1<unknown>> {
+export async function POST(req:NextRequest):Promise<StandarApiResponseV1<unknown >> {
     try {
         const  userCreateData = await req.json()
         // prevenet misslineous in the request by veryfying the data
         const isValidRequest =await CreateUserSchema.safeParseAsync(userCreateData)
         if(!isValidRequest.success){
+            const {message}= JSON.parse(isValidRequest.error.message)[0]
+            // const errorArray = JSON.parse(isValidRequest.error.message)
+            // return NextResponse.json({
+            //     success:false,
+            //     error:{
+            //         message:errorArray,
+            //         status_code:HTTP_STATUS_CODE.BAD_REQUEST
+            //     }
+            // })
             return badRequest({
-                errorMessage:isValidRequest.error.message || "Bad Request!"
+                errorMessage: message || isValidRequest.error.message    || "Bad Request!"
             })
         }
 
@@ -61,10 +71,13 @@ export async function POST(req:NextRequest):Promise<StandarApiResponseV1<unknown
         }
 
         // create session for seperate
-        
+        //  7 day after date fillup 
+        const today = new Date()
+        const dateFormatFor7Days = new Date(today)
+        dateFormatFor7Days.setDate(today.getDate() + 7)
         const newSessionAssignment = new Session({
             userId:userDoc._id,
-            exp:process.env.TOKEN_EXP_STRATEGY || "7d", 
+            exp:  dateFormatFor7Days|| process.env.TOKEN_EXP_STRATEGY || "7d" , 
             isConsumer:true
         })
 
@@ -72,6 +85,11 @@ export async function POST(req:NextRequest):Promise<StandarApiResponseV1<unknown
 
         await newSessionAssignment.save()
 
+        if(!newSessionAssignment){
+            return internalServerIssue({
+                errorMessage:"Failed to  create session!"
+            })
+        }
         const tokenResult = await getToken({
             sessionId: newSessionAssignment._id.toString(),
             exp: process.env.TOKEN_EXP_STRATEGY || "7d"
