@@ -4,9 +4,9 @@ export interface UserInterface {
     email: string
     password: string,
     profilePicture?: string
-    isDeveloper: boolean
-    isAdmin: boolean
-    isConsumer: boolean
+    isDeveloper?: boolean
+    isAdmin?: boolean
+    isConsumer?: boolean
     createdAt?: Date,
     updatedAt?: Date
 }
@@ -41,7 +41,8 @@ const UserSchema:Schema<UserInterface> = new Schema({
         type:String,
         required:false,
         default:'/defaultProfilePicture.png'
-    }
+    },
+ 
 },{
     timestamps:true
 })
