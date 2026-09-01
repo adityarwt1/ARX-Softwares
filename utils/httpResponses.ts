@@ -5,12 +5,12 @@ import { HTTP_Response } from "@/interfaces/httpResponse/httpServerResponse"
 import { NextResponse } from "next/server"
 
 interface InternalServerIssueProps {
-    errorMessage:string 
-}
+    errorMessage?:string 
+} 
 interface BadrequestProps{
     errorMessage:string
 }
-export  const internalServerIssue = async <T>({errorMessage}:InternalServerIssueProps)=> NextResponse.json<HTTP_Response<T>>({
+export  const internalServerIssue = async <T>({errorMessage = "INTERNAL SERVER ISSUE!"}:InternalServerIssueProps = {} )=> NextResponse.json<HTTP_Response<T>>({
     success:false,
     error:{
         message:errorMessage,
@@ -43,7 +43,7 @@ export const resultantResponse = async <T>({
     data
 }: {
     data?: T
-}) =>
+} = {}) =>
     NextResponse.json<HTTP_Response<T>>({
         success: true,
         data,
@@ -51,3 +51,13 @@ export const resultantResponse = async <T>({
     },{
         status:HTTP_STATUS_CODE.OK
     });
+
+export const unauthorized = async ({errorMessage = "UNOTHERIZED"}:{errorMessage?:string} = {})=> NextResponse.json<HTTP_Response>({
+    success:false,
+    error:{
+        message:errorMessage || "UNOTHERIZED!",
+        status_code:401
+    }
+},{
+    status:HTTP_STATUS_CODE.UNAUTHORIZED
+})
