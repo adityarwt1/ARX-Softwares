@@ -1,13 +1,14 @@
-import { HTTP_STATUS_CODE } from "@/enums/httpRequest/statusCode";
 import dbConnect from "@/lib/mongodb";
 import Session from "@/models/session";
 import User from "@/models/user";
 import { StandarApiResponseV1 } from "@/types/apiRespnse/ApiResponse";
-import { getPublicKey, getToken } from "@/utils/authenticationsJose";
-import { badRequest, conflict, internalServerIssue, resultantResponse } from "@/utils/httpResponses";
+import { isUserAuthunticated } from "@/utils/auth/userApiAuthentications";
+import {  getToken } from "@/utils/authenticationsJose";
+import { throwUnauthorized } from "@/utils/backendThrowers/thorwers";
+import { badRequest, conflict, internalServerIssue, resultantResponse, unauthorized } from "@/utils/httpResponses";
 import { CreateUserSchema } from "@/validations/userSignup/userValidations";
 import bcrypt from "bcryptjs";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest} from "next/server";
 
 /**
  * when i api response send refresh the page to use the default strategy
@@ -19,26 +20,13 @@ export async function POST(req:NextRequest):Promise<StandarApiResponseV1<unknown
         const isValidRequest =await CreateUserSchema.safeParseAsync(userCreateData)
         if(!isValidRequest.success){
             const {message}= JSON.parse(isValidRequest.error.message)[0]
-            // const errorArray = JSON.parse(isValidRequest.error.message)
-            // return NextResponse.json({
-            //     success:false,
-            //     error:{
-            //         message:errorArray,
-            //         status_code:HTTP_STATUS_CODE.BAD_REQUEST
-            //     }
-            // })
             return badRequest({
                 errorMessage: message || isValidRequest.error.message    || "Bad Request!"
             })
         }
 
         /// checking databser connectoin 
-        const isDbConnected = await dbConnect()
-        if(!isDbConnected){
-            return internalServerIssue({
-                errorMessage:"Internal server isssue!"
-            })
-        }
+      if(!(await dbConnect())) return internalServerIssue()
 
         const userData =  isValidRequest.data
 
@@ -53,12 +41,7 @@ export async function POST(req:NextRequest):Promise<StandarApiResponseV1<unknown
         }
         // password Hashing
         const hashedPassword = await bcrypt.hash(userData.password, 10)
-        const publicKey = getPublicKey()
-        if(!publicKey){
-            return internalServerIssue({
-                errorMessage:"JOSE signing keys are not configured!"
-            })
-        }
+       
        
         const userDoc = new User({...userData, password:hashedPassword})
         await userDoc.save()
@@ -103,7 +86,6 @@ export async function POST(req:NextRequest):Promise<StandarApiResponseV1<unknown
         const response = await resultantResponse({
             data: {
                 token: tokenResult.token,
-                publicKey
             }
         })
         response.cookies.set("access_token", tokenResult.token, {
@@ -121,3 +103,72 @@ export async function POST(req:NextRequest):Promise<StandarApiResponseV1<unknown
         })
     }
 } 
+
+
+/// get user information detail
+interface UserInformation {
+    fullName:string,
+    email:string,
+    isAdmin:boolean,
+    isConsumer:boolean,
+    isDeveloper:boolean,
+    profilePicture:string
+}
+
+const isValidTimeToProccedd = async (date:Date) => {
+    const today =  new Date()
+    return today < date
+}
+
+export async function GET(req:NextRequest):Promise<StandarApiResponseV1<UserInformation | unknown>> {
+    try {
+
+        const isUserAuthenticated = await isUserAuthunticated(req)
+        // when unotherized access are happing
+        const unauthorizedResponse = await throwUnauthorized(isUserAuthenticated.isAuthorizedAccess)
+        if (unauthorizedResponse) {
+            return unauthorizedResponse
+        }
+
+        // database connection check 
+        if(!(await dbConnect())) return internalServerIssue()
+        // session and session validations
+
+        const session = await Session.findOne({
+            _id:isUserAuthenticated.tokenData?.sessionId
+        }).lean().select("exp userId")
+        // if seesion not available
+        if (!session) {
+            return unauthorized()
+        }
+
+        // date time limit check
+        if (!(await isValidTimeToProccedd(session.exp as Date))) {
+            return unauthorized()
+        }
+
+        const userInformations = await User.findOne({
+            _id: session.userId
+        })
+        .lean()
+        .select("fullName email isAdmin isDeveloper isConsumer profilePicture")
+
+        // if user not foundf
+        if(!userInformations) {
+            // delete sessions
+            await Session.findOneAndDelete({
+                _id:isUserAuthenticated.tokenData?.sessionId
+            }).lean().select("_id")
+            return unauthorized()
+        }
+
+        return resultantResponse<UserInformation>({
+            data:userInformations
+        })
+    } catch (error) {
+        console.log((error as Error).message)
+        return internalServerIssue({
+            errorMessage:(error as Error).message || "Internal server issue!"
+        })
+    }
+}
