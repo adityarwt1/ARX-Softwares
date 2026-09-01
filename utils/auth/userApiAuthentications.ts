@@ -11,8 +11,9 @@ interface UserAuthenticationResponse {
 export const isUserAuthunticated = async (req:NextRequest):Promise<UserAuthenticationResponse> =>{
     try {
         const requestHeaderFunction = req.headers
-        const sessionToken =  requestHeaderFunction.get("authorization")?.split(" ")[1]
-        const publicKey = requestHeaderFunction.get("X-PUBLIC-KEY")
+        const sessionToken = requestHeaderFunction.get("authorization")?.split(" ")[1]
+        const publicKeyFromHeader = requestHeaderFunction.get("x-public-key")
+        const publicKey = publicKeyFromHeader || process.env.JOSE_PUBLIC_KEY || process.env.NEXT_PUBLIC_JOSE_PUBLIC_KEY
 
         if(!sessionToken || !publicKey){
             return {

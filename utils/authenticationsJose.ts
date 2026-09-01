@@ -1,9 +1,13 @@
 import { importPKCS8, importSPKI, jwtVerify, SignJWT } from "jose";
 
-const readEnvKey = (key: string): string | undefined =>
-    process.env[key]?.replace(/\\n/g, "\n")
+const normalizePem = (value?: string): string | undefined =>
+    value?.replace(/\\n/g, "\n").trim()
 
-export const getPublicKey = (): string | undefined => readEnvKey("JOSE_PUBLIC_KEY")
+const readEnvKey = (key: string): string | undefined =>
+    normalizePem(process.env[key])
+
+export const getPublicKey = (): string | undefined =>
+    readEnvKey("JOSE_PUBLIC_KEY") ?? readEnvKey("NEXT_PUBLIC_JOSE_PUBLIC_KEY")
 
 interface JWTTJoseTokenInterface {
     sessionId:string
@@ -55,7 +59,7 @@ export const  verifyToken = async (data:{token:string, publickKey?:string}):Prom
     }
 }> => {
     try {
-        const publicKeyPem = data.publickKey || getPublicKey()
+        const publicKeyPem = normalizePem(data.publickKey) || getPublicKey()
         if(!publicKeyPem){
             return {isVerified:false}
         }
