@@ -20,7 +20,7 @@ export const isUserAuthunticated = async (req:NextRequest):Promise<UserAuthentic
                 isAuthorizedAccess:false
             }
         }
-
+        
         const verifyJoshToken = await verifyToken({
             token:sessionToken,
             publickKey:publicKey

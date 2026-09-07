@@ -7,6 +7,7 @@ import { getToken } from "@/utils/authenticationsJose";
 import { throwUnauthorized } from "@/utils/backendThrowers/thorwers";
 import { getSessionIdToUserId } from "@/utils/dataBaseHelper/repeateQuesryHelpers";
 import { badRequest, conflict, forbidden, internalServerIssue, resultantResponse, unauthorized } from "@/utils/httpResponses";
+import { getErrorMessageOfZodValidatoins } from "@/utils/zodvalidations/zodEvents";
 import { CreateUserSchema, UpdateUserSchema } from "@/validations/userSignup/userValidations";
 import bcrypt from "bcryptjs";
 import { NextRequest } from "next/server";
@@ -20,21 +21,22 @@ export async function POST(req: NextRequest): Promise<StandarApiResponseV1<unkno
     // prevenet misslineous in the request by veryfying the data
     const isValidRequest = await CreateUserSchema.safeParseAsync(userCreateData)
     if (!isValidRequest.success) {
-      const { message } = JSON.parse(isValidRequest.error.message)[0]
+      const message =await getErrorMessageOfZodValidatoins(isValidRequest)
       return badRequest({
         errorMessage: message || isValidRequest.error.message || "Bad Request!"
       })
     }
-
+    
+    const userData = isValidRequest.data
+    if(userData.isAdmin) return forbidden()
     /// checking databser connectoin 
     if (!(await dbConnect())) return internalServerIssue()
 
-    const userData = isValidRequest.data
 
     const isUserExistAlready = await User.findOne({
       email: userData.email
     }).select("_id")
-
+    console.log(isUserExistAlready)
     if (isUserExistAlready) {
       return conflict({
         errorMessage: "User already exist with  this email!"
@@ -212,6 +214,44 @@ export async function PATCH(req: NextRequest): Promise<StandarApiResponseV1<unkn
       })
     if (!updatedUser) return internalServerIssue()
     return resultantResponse()
+  } catch (error) {
+    console.log((error as Error).message)
+    return internalServerIssue()
+  }
+}
+
+
+export async function DELETE(req:NextRequest) : Promise<StandarApiResponseV1<unknown>> {
+  try {
+    const isAuthorizedRequiest = await isUserAuthunticated(req)
+    // if not authenticated = 
+    if(!isAuthorizedRequiest.isAuthorizedAccess || !isAuthorizedRequiest.tokenData) return unauthorized()
+
+      // checking database connectoin 
+      if(!(await dbConnect())) return internalServerIssue()
+
+        // getting current session
+        const getOneSession = await Session.findOne({
+          _id:isAuthorizedRequiest.tokenData.sessionId
+        }).select("userId").lean().sort({createdAt:1})
+        const userId = getOneSession?._id;
+        // where user not fouund again
+        if(!getOneSession || !userId) return unauthorized()
+          // deletetin all session
+        await Session.deleteMany({
+          userId
+        })
+        
+        // deleting all user information from the database
+        const userInfomations = await User.findOneAndDelete({
+          _id:userId
+        }, {
+          new:false
+        })
+
+        // if user not found still throw the unauthorized error
+        if(!userInfomations) return unauthorized()
+          return resultantResponse()
   } catch (error) {
     console.log((error as Error).message)
     return internalServerIssue()

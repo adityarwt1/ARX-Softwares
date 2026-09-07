@@ -29,10 +29,10 @@ export const badRequest  = async ({errorMessage}:BadrequestProps = {}) => NextRe
 },{
     status:HTTP_STATUS_CODE.BAD_REQUEST
 })
-export const conflict  = async ({errorMessage}:BadrequestProps) => NextResponse.json<HTTP_Response>({
+export const conflict  = async ({errorMessage}:BadrequestProps = {}) => NextResponse.json<HTTP_Response>({
     success:false,
     error:{
-        message:errorMessage,
+        message:errorMessage || "Already Exist!",
         status_code:HTTP_STATUS_CODE.CONFLICT
     }
 },{
@@ -47,7 +47,7 @@ export const resultantResponse = async <T>({
     NextResponse.json<HTTP_Response<T>>({
         success: true,
         data,
-        success_message: "Done Successfully!"
+        success_message: "Successfull!"
     },{
         status:HTTP_STATUS_CODE.OK
     });
