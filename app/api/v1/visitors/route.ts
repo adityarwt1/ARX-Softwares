@@ -212,3 +212,31 @@ export async function POST(req: NextRequest): Promise<StandarApiResponseV1<unkno
         return internalServerIssue()
     }
 }
+
+
+
+export async function GET(): Promise<StandarApiResponseV1<unknown>> {
+    try {
+        if (!(await dbConnect())) return internalServerIssue({ errorMessage: "Database Connection failed!" })
+
+        const visitorsDocuments = await Visitors.find({}).lean();
+        
+        const totalVisitors = visitorsDocuments.reduce((sum: number, document: any) => {
+            const yearTotal = (document.months ?? []).reduce((monthSum: number, month: any) => {
+                const monthTotal = (month.days ?? []).reduce((daySum: number, day: any) => daySum + (day.visitios ?? 0), 0);
+                return monthSum + monthTotal;
+            }, 0);
+
+            return sum + yearTotal;
+        }, 0);
+
+        return resultantResponse({
+            data: {
+                totalVisitors,
+            },
+        });
+    } catch (error) {
+        console.log((error as Error).message)
+        return internalServerIssue()
+    }
+}
