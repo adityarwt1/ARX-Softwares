@@ -80,6 +80,7 @@ const YearBasedVisitorsSchema = new Schema<YearBasedVisitors>(
         year: {
             type: Number,
             required: true,
+            index:true
         },
 
         months: {
