@@ -46,17 +46,9 @@ export const CreateUserSchema = z.object({
         .trim()
         .optional(),
 
-    isDeveloper: z
-        .boolean()
-        .default(false),
-
-    isAdmin: z
-        .boolean()
-        .default(false),
-
     isConsumer: z
         .boolean()
-        .default(false),
+        .default(false)
 });
 
 

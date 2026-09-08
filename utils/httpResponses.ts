@@ -70,3 +70,12 @@ export const forbidden= async ({errorMessage = "FORBIDDEN"}:{errorMessage?:strin
 },{
     status:HTTP_STATUS_CODE.FORBIDDEN
 })
+export const notFound = async ({errorMessage = "NOT FOUND!"}:{errorMessage?:string} = {})=> NextResponse.json<HTTP_Response>({
+    success:false,
+    error:{
+        message:errorMessage || "NOT FOUND!",
+        status_code:HTTP_STATUS_CODE.NOT_FOUND
+    }
+},{
+    status:HTTP_STATUS_CODE.NOT_FOUND
+})

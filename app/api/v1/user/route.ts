@@ -6,7 +6,7 @@ import { isUserAuthunticated } from "@/utils/auth/userApiAuthentications";
 import { getToken } from "@/utils/authenticationsJose";
 import { throwUnauthorized } from "@/utils/backendThrowers/thorwers";
 import { getSessionIdToUserId } from "@/utils/dataBaseHelper/repeateQuesryHelpers";
-import { badRequest, conflict, forbidden, internalServerIssue, resultantResponse, unauthorized } from "@/utils/httpResponses";
+import { badRequest, conflict, forbidden, internalServerIssue, notFound, resultantResponse, unauthorized } from "@/utils/httpResponses";
 import { getErrorMessageOfZodValidatoins } from "@/utils/zodvalidations/zodEvents";
 import { CreateUserSchema, UpdateUserSchema } from "@/validations/userSignup/userValidations";
 import bcrypt from "bcryptjs";
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest): Promise<StandarApiResponseV1<unkno
     }
     
     const userData = isValidRequest.data
-    if(userData.isAdmin) return forbidden()
+    // if(userData.isAdmin) return forbidden()
     /// checking databser connectoin 
     if (!(await dbConnect())) return internalServerIssue()
 
@@ -36,7 +36,6 @@ export async function POST(req: NextRequest): Promise<StandarApiResponseV1<unkno
     const isUserExistAlready = await User.findOne({
       email: userData.email
     }).select("_id")
-    console.log(isUserExistAlready)
     if (isUserExistAlready) {
       return conflict({
         errorMessage: "User already exist with  this email!"
@@ -91,7 +90,7 @@ export async function POST(req: NextRequest): Promise<StandarApiResponseV1<unkno
         token: tokenResult.token,
       }
     })
-    response.cookies.set("access_token", tokenResult.token, {
+    response.cookies.set(process.env.COOKIE_NAME as string || "ARX_SOFTWARES", tokenResult.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
@@ -201,8 +200,7 @@ export async function PATCH(req: NextRequest): Promise<StandarApiResponseV1<unkn
       const isExisting = await User.findOne({
         email: validateRequest.data.email
       }).lean().select("_id")
-
-      if (isExisting && userId !== isExisting._id.toString()) {
+      if (isExisting && userId.toString() !== isExisting._id.toString()) {
         return forbidden()
       }
     }
@@ -250,7 +248,7 @@ export async function DELETE(req:NextRequest) : Promise<StandarApiResponseV1<unk
         })
 
         // if user not found still throw the unauthorized error
-        if(!userInfomations) return unauthorized()
+        if(!userInfomations) return notFound ()
           return resultantResponse()
   } catch (error) {
     console.log((error as Error).message)
