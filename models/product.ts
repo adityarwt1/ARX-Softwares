@@ -82,7 +82,7 @@ const ProductSchema = new Schema<ProductInterface>(
 
         type: {
             type: String,
-            enum: ["EDTECH"],
+            enum: ["EDTECH", 'NPM_PACKAGE', ],
             required: true,
             default: "EDTECH",
         },
