@@ -67,7 +67,7 @@ export async function GET(req: NextRequest): Promise<StandarApiResponseV1<unknow
     });
   } catch (error) {
     console.log((error as Error).message);
-    return internalServerIssue({
+    return internalServerIssue({    
       errorMessage: (error as Error)?.message || "Internal server issue!",
     });
   }
