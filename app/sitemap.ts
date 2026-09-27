@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://arxsoftwares.com"
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://arx-softwares.vercel.app/"
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

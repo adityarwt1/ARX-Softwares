@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://arxsoftwares.com"
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://arx-softwares.vercel.app/"
 
 export const metadata: Metadata = {
   title: "ARX Softwares — Sustainable, unbeatable software products",

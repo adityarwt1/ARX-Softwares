@@ -14,8 +14,8 @@ const HeroRightSection: React.FC = () => {
                     revalidate:600
                 }
             })
-            const data: HTTP_Response<{ visits: number }> = await response.json()
-            if (response.ok && data.data) setCurrentVisits(data.data.visits)
+            const data: HTTP_Response<{ totalVisitors: number }> = await response.json()
+            if (response.ok && data.data) setCurrentVisits(data.data.totalVisitors)
             console.log(data)
         } catch (error) {
             console.log(error)
@@ -30,9 +30,9 @@ const HeroRightSection: React.FC = () => {
     return (
         <div className="w-[70%] flex flex-col my-2">
             <div className="flex gap-2">
-                <ButtonNormal title={`Visitors: ${String(currentVisits).toLocaleString()}`} />
-                <ButtonNormal title={`Product: 2`} />
-                <ButtonNormal title={`Upcomming: 5`} />
+                <ButtonNormal title={`Visitors: ${currentVisits.toLocaleString("en-IN")}`} />
+                <ButtonNormal title={`Current Available Products: ${process.env.NEXT_PUBLIC_PRODUCTS as string ? process.env.NEXT_PUBLIC_PRODUCTS : "Not Decided"}`}  />
+                <ButtonNormal title={`Upcomming Products: ${process.env.NEXT_PUBLIC_UPCOMMING_PRODUCT as string ? process.env.NEXT_PUBLIC_UPCOMMING_PRODUCT : "Not Decided"}`}  />
             </div>
             
         </div>
